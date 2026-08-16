@@ -153,6 +153,7 @@ language: en
 - **Custom writing blocks**: NexT-compatible `{% note %}` and `{% tabs %}`, plus VitePress-style `:::` note containers.
 - **Built-in pages**: archives, categories, tags, and grouped friend links from `source/_data/links.yml`.
 - **Guestbook**: `type: guestbook` re-renders the page comments as a scrapbook message wall (Twikoo / Artalk). Sticker colors and tilts derive deterministically from comment ids, with random/latest sorting.
+- **Reward list**: structured HTML in an about page renders scrapbook-style donation slips — washi tape, rotating paper colors, circular top-right avatar; the amount badge auto-colors by RMB tier (≥100 red / ≥50 green / ≥20 amber / ≥10 blue / ≥5 violet / ≥1 olive).
 - **Typewriter effect**: anzhiyu-style typed text (Typed.js) next to the footer copyright line and in the home hero bio. Content sources are compatible with hitokoto / yijuzhan / jinrishici, or a custom `sub` list.
 - **Footer icon links**: `footer.links` entries support icon-only links via an `icons` array (e.g. Font Awesome CC marks), and `powered.position: end` appends the theme credit to the end of the link row.
 - **Multi-language UI**: built-in interface text in Simplified Chinese and English, selected from the Hexo `language` setting with a `zh-CN` fallback; ships both `_config.yml` and `_config.en.yml`.
