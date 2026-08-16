@@ -195,3 +195,39 @@ page_size: 12
 - Twikoo 的头像会显示在纸片上；Artalk 的公开接口不返回头像地址，纸片统一使用昵称首字符头像。
 - `page_size` 控制每批展示的张数（默认 12，上限 50），超出部分通过「展开更多留言」按钮加载。
 - front-matter 正文（markdown）会渲染在留言墙上方，可用作开场白。
+
+## 堆叠相册(Stack Album)
+
+一组像扑克牌一样堆叠的照片;点击最上层照片,它会被抽起并滑到牌堆底部(澎湃 OS 相册风格)。最上层照片清晰,下方堆叠的照片做模糊处理。
+
+```markdown
+{% stackalbum %}
+![](https://example.com/landscape.jpg "h")
+![](https://example.com/portrait.jpg "v")
+![](https://example.com/auto.jpg)
+{% endstackalbum %}
+```
+
+- 可选参数 `宽,高` 控制容器尺寸(默认 `480,480`)。
+- 每张图可用 markdown title 声明方向:`"h"`(横屏卡,480×320)或 `"v"`(竖屏卡,320×480);不填的图片按自身宽高比自动适配。
+- `object-fit: cover` 铺满卡片,横屏照片横向满铺、无上下留白。
+- 点击最上层照片:抽起 0.26s → 滑落到底层 0.38s;动画期间锁定点击,防止连点交错。
+
+### 悬停翻牌(关于页爱好番剧)
+
+`{% stackalbumnav %}` 渲染一个小号堆叠相册 + 番剧名字列表,数据来自 `source/_data/about.yml` 的 `comic.comic_list`(`name`/`href`/`cover` 字段)。鼠标悬停某个名字,对应封面翻到堆叠最上层;移开后恢复原始顺序。图片在右,名字列表与页面正文左对齐。
+
+```yaml
+comic:
+  comic_tips: 爱好番剧
+  comic_list:
+    - name: 鲤氏侦探事务所
+      href: https://www.bilibili.com/bangumi/media/md28351530
+      cover: https://img.example.com/cover.webp
+```
+
+行为说明:
+
+- 图片统一带 `referrerpolicy="no-referrer"`,可正常加载防盗链图床(如 B 站 `i0.hdslb.com`);注入脚本还会给加载失败的 B 站图片补上该策略并重载,堆叠图片失败时自动重试一次。
+- 主题的图片增强脚本会把文章图片包进 fancybox 链接;堆叠卡片会移除 `data-fancybox` 并阻止链接跳转,点击只翻牌、不弹大图。
+- 无 JS 降级:照片按普通流式列表完整展示。

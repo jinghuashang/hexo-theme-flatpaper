@@ -195,3 +195,39 @@ Behavior notes:
 - Twikoo avatars show on the cards; Artalk's public API returns no avatar URL, so its cards use initial-letter avatars.
 - `page_size` controls how many cards render per batch (default 12, max 50); the rest load via the "show more" button.
 - The page's markdown body renders above the wall and works as an intro.
+
+## Stack Album (stacked photo deck)
+
+A deck of photos stacked like playing cards; clicking the top card flips it to the bottom (HyperOS-gallery style). Stacked cards below the top one are blurred.
+
+```markdown
+{% stackalbum %}
+![](https://example.com/landscape.jpg "h")
+![](https://example.com/portrait.jpg "v")
+![](https://example.com/auto.jpg)
+{% endstackalbum %}
+```
+
+- Optional `width,height` arguments set the container size (default `480,480`).
+- Each image can declare its orientation via the markdown title: `"h"` (landscape card, 480×320) or `"v"` (portrait card, 320×480). Unmarked images auto-fit by their natural aspect ratio.
+- `object-fit: cover` fills the card edge-to-edge; landscape photos sit horizontally with no letterboxing.
+- The top card is sharp; the cards below are blurred (`blur(3px)`). Clicking the top card lifts it, then slides it to the bottom of the deck (0.26s lift + 0.38s drop; clicks are locked mid-animation).
+
+### Nav stack (about-page favourite list)
+
+`{% stackalbumnav %}` renders a small stacked deck plus a name list read from `source/_data/about.yml` (`comic.comic_list` entries with `name`, `href`, `cover`). Hovering a name flips that entry's cover to the top of the deck; moving the pointer away restores the original order. The deck sits on the right, and the name list is left-aligned with the surrounding page text.
+
+```yaml
+comic:
+  comic_tips: 爱好番剧
+  comic_list:
+    - name: 鲤氏侦探事务所
+      href: https://www.bilibili.com/bangumi/media/md28351530
+      cover: https://img.example.com/cover.webp
+```
+
+Behavior notes:
+
+- Images are emitted with `referrerpolicy="no-referrer"` so hotlink-protected hosts (e.g. Bilibili `i0.hdslb.com`) load; the injected script also re-attaches the policy and reloads failed Bilibili images, plus a one-shot retry for any failed stack image.
+- The theme's image-enhancement script wraps article images in fancybox links; stack cards strip `data-fancybox` and block link navigation so clicks flip cards instead of opening a lightbox.
+- No-JS fallback: photos render as a normal flowing list, fully visible.
