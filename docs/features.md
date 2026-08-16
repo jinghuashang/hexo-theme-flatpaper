@@ -152,6 +152,38 @@ Features:
 - **Avatar**: a `no-zoom` circular avatar is pasted in the top-right corner; omit the `img` and use `.reward-list__avatar--text` for a first-letter fallback.
 - **Responsive**: multi-column auto layout on desktop, single column on narrow screens; supports dark mode and `prefers-reduced-motion`.
 
+## Sidebar Location Welcome Card
+
+`welcome_location` renders a visitor-greeting card below the profile card in the right sidebar, based on the visitor's IP geolocation (kouseki style). Disabled by default.
+
+```yaml
+welcome_location:
+  enable: true
+  key: your-tencent-lbs-webserviceapi-key
+  longitude: 105.43501   # blogger longitude
+  latitude: 28.87875     # blogger latitude
+  unit: km               # distance unit
+  ipv6_text: 好复杂，咱看不懂~(ipv6)
+```
+
+Prerequisites:
+
+1. Create an app in the [Tencent Location Service console](https://lbs.qq.com/dev/console/application/mine) and add a Key with `WebServiceAPI` enabled
+2. Fill in `key` plus the blogger's longitude/latitude (pick from a map tool)
+
+Behavior:
+
+- Resolves the visitor's country / province / city from the IP and shows a tailored greeting (built-in table covering Chinese provinces and major countries)
+- Computes the distance between visitor and blogger (spherical distance)
+- Shows the visitor's IP; IPv6 addresses render as `ipv6_text`
+- Switches a time-of-day greeting (morning / noon / afternoon / evening / night) by local time
+
+Implementation notes:
+
+- Vanilla JSONP against `apis.map.qq.com`, no jQuery dependency
+- Card title uses the ID-badge icon (`id-card-lanyard`)
+- Shows "定位失败" when geolocation fails; works inside the mobile sidebar drawer too
+
 ## Multi-language UI
 
 FlatPaper's built-in interface text is localized and selected from the Hexo site `language` setting, supporting `zh-CN` and `en` with a `zh-CN` fallback.

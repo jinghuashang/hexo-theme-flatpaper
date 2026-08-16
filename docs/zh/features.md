@@ -148,6 +148,38 @@ Hero 默认关闭；只有设置 `home_hero.enable: true` 后才会替换普通�
 - **头像**：`no-zoom` 圆形头像贴在右上角；省略 `img` 时可用 `.reward-list__avatar--text` 显示名字首字符回退。
 - **响应式**：桌面多列自动排布，窄屏降为单列；支持深色模式与 `prefers-reduced-motion`。
 
+## 侧边栏定位欢迎卡片
+
+`welcome_location` 在右侧栏 profile 卡片下方渲染一张基于访客 IP 归属地的欢迎卡片（kouseki 风格），默认关闭。
+
+```yaml
+welcome_location:
+  enable: true
+  key: 你的腾讯位置服务WebServiceAPI Key
+  longitude: 105.43501   # 博主所在经度
+  latitude: 28.87875     # 博主所在纬度
+  unit: 公里             # 距离单位
+  ipv6_text: 好复杂，咱看不懂~(ipv6)
+```
+
+前置条件：
+
+1. 到[腾讯位置服务控制台](https://lbs.qq.com/dev/console/application/mine)创建应用，添加一个勾选了 `WebServiceAPI` 的 Key
+2. 配置 `key`，以及博主所在位置的经纬度（可用地图工具拾取）
+
+效果：
+
+- 根据访客 IP 解析国家 / 省份 / 城市，显示对应定制欢迎语（内置全国省份及主要国家文案表）
+- 计算访客与博主之间的距离（球面距离）
+- 显示访客 IP 地址；IPv6 地址按 `ipv6_text` 显示
+- 按本地时间切换时段问候（早 / 午 / 下午 / 傍晚 / 夜）
+
+实现说明：
+
+- 原生 JSONP 请求 `apis.map.qq.com`，不依赖 jQuery
+- 卡片标题使用工牌图标（`id-card-lanyard`）
+- 定位失败时显示「定位失败」；卡片在移动端侧栏抽屉中同样生效
+
 ## 多语言界面
 
 FlatPaper 的内置界面文案已本地化，根据 Hexo 站点 `language` 配置选择，支持 `zh-CN` 与 `en`，并回退到 `zh-CN`。
