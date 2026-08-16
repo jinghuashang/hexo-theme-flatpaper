@@ -24,17 +24,27 @@ function resolveHref(raw) {
 }
 function renderAnchor(item) {
   if (!item || typeof item !== 'object') return '';
-  var label = item.name || item.text || item.title;
-  if (label == null) return '';
-  var safeLabel = escapeHTML(label);
+  var label = item.name || item.text || '';
   var href = resolveHref(item.link || item.url || item.href);
-  if (!href) return '<span class="site-footer__text">' + safeLabel + '</span>';
+  var icons = Array.isArray(item.icons) ? item.icons : (item.icon ? [item.icon] : []);
+  var iconHtml = icons.map(function (ic) {
+    return flatpaper_icon(ic, { size: item.iconSize || '1em' });
+  }).join('');
+  if (!href && !iconHtml && !label) return '';
+  var safeLabel = escapeHTML(label);
+  if (!href) {
+    return '<span class="site-footer__text">' + iconHtml + safeLabel + '</span>';
+  }
   var target = item.target === false ? '' : (item.target || (shouldOpenInNewTab(href) ? '_blank' : ''));
   var rel = item.rel === false ? '' : (item.rel || (target === '_blank' ? 'noopener' : ''));
+  var linkClass = iconHtml ? ' site-footer__icon-link' : '';
   return '<a href="' + escapeHTML(href) + '"' +
     (target ? ' target="' + escapeHTML(target) + '"' : '') +
     (rel ? ' rel="' + escapeHTML(rel) + '"' : '') +
-    '>' + safeLabel + '</a>';
+    (linkClass ? ' class="' + linkClass + '"' : '') +
+    (item.title ? ' title="' + escapeHTML(item.title) + '"' : '') +
+    (item['aria-label'] ? ' aria-label="' + escapeHTML(item['aria-label']) + '"' : '') +
+    '>' + iconHtml + (iconHtml && safeLabel ? ' ' : '') + safeLabel + '</a>';
 }
 var themeLink = renderAnchor({ name: defaultThemeName, link: defaultThemeLink });
 function fill(tpl, fallback) {
@@ -82,15 +92,27 @@ function renderLinkRow(row) {
   return rendered.join('<span class="site-footer__separator">' + escapeHTML(separator) + '</span>');
 }
 var left = fill(f.left, '© ' + year + ' ' + name);
-var rightRows = [];
+var linkRows = normalizeLinkRows(f.links).map(renderLinkRow).filter(Boolean);
 var powered = renderPowered(f.powered);
-if (powered) rightRows.push(powered);
-normalizeLinkRows(f.links).map(renderLinkRow).filter(Boolean).forEach(function (row) {
+var poweredAtEnd = !!(powered && f.powered && f.powered.position === 'end');
+var rightRows = [];
+if (powered && !poweredAtEnd) rightRows.push(powered);
+linkRows.forEach(function (row, index) {
+  if (poweredAtEnd && index === linkRows.length - 1) {
+    row = row + '<span class="site-footer__separator"> · </span>' + powered;
+  }
   rightRows.push(row);
 });
+if (powered && poweredAtEnd && !linkRows.length) rightRows.push(powered);
+
+// Footer typewriter (anzhiyu-style typed effect next to the copyright line).
+var typed = f.typed && typeof f.typed === 'object' ? f.typed : {};
+var typedEnable = typed.enable === true;
 %>
 <footer class="site-footer">
-  <span class="site-footer__left"><%- left %></span>
+  <span class="site-footer__left">
+    <%- left %><% if (typedEnable) { %><%- partial('_partial/typed', { typed: typed, target_id: 'footer-type-tips', target_cls: 'site-footer__typed' }) %><% } %>
+  </span>
   <% if (rightRows.length) { %>
     <span class="site-footer__right">
       <% rightRows.forEach(function (row) { %>

@@ -1,0 +1,108 @@
+<%
+// Shared anzhiyu-style typewriter: renders a typed-effect span plus the
+// initializer script. Expected locals:
+//   typed       - config object (enable/effect/loop/start_delay/type_speed/back_speed/source/sub/cdn)
+//   target_id   - element id (default 'footer-type-tips')
+//   target_cls  - extra class for the span
+// source (anzhiyu footerBar.subTitle compatible):
+//   false       - only `sub` strings
+//   1           - hitokoto.cn 一言 (fetched first, then `sub`)
+//   2           - yijuzhan.com 一句网 (loaded as script, then `sub`)
+//   3           - jinrishici.com 今日诗词 (SDK callback, then `sub`)
+var tdata = (typed && typeof typed === 'object') ? typed : {};
+var tId = target_id || 'footer-type-tips';
+var tCls = target_cls || '';
+var tEnable = tdata.enable === true;
+var tEffect = tdata.effect !== false;
+var tLoop = tdata.loop !== false;
+var tSource = parseInt(tdata.source, 10);
+if (!isFinite(tSource)) tSource = 0;
+var tStartDelay = parseInt(tdata.start_delay, 10);
+if (!isFinite(tStartDelay) || tStartDelay < 0) tStartDelay = 300;
+var tTypeSpeed = parseInt(tdata.type_speed, 10);
+if (!isFinite(tTypeSpeed) || tTypeSpeed < 0) tTypeSpeed = 150;
+var tBackSpeed = parseInt(tdata.back_speed, 10);
+if (!isFinite(tBackSpeed) || tBackSpeed < 0) tBackSpeed = 50;
+var tSub = Array.isArray(tdata.sub) && tdata.sub.length ? tdata.sub.slice() : (config.subtitle ? [config.subtitle] : []);
+var tCdn = tdata.cdn || 'https://cdn.jsdelivr.net/npm/typed.js@2.1.0/dist/typed.umd.js';
+%>
+<% if (tEnable) { %>
+<span class="<%= tCls %>" id="<%= tId %>" aria-live="polite"></span>
+<script>
+(function () {
+  var el = document.getElementById(<%- JSON.stringify(tId) %>);
+  if (!el) return;
+  var sub = <%- JSON.stringify(tSub).replace(/</g, '\\u003c') %>;
+  var source = <%- tSource %>;
+  var effect = <%- tEffect %>;
+  var loop = <%- tLoop %>;
+  var startDelay = <%- tStartDelay %>;
+  var typeSpeed = <%- tTypeSpeed %>;
+  var backSpeed = <%- tBackSpeed %>;
+
+  function startTyped(strings) {
+    if (!effect) {
+      el.textContent = strings[0] || '';
+      return;
+    }
+    if (typeof Typed === 'undefined') { setTimeout(function () { startTyped(strings); }, 150); return; }
+    new Typed(el, {
+      strings: strings,
+      startDelay: startDelay,
+      typeSpeed: typeSpeed,
+      backSpeed: backSpeed,
+      loop: loop
+    });
+  }
+
+  function loadScript(src, onload) {
+    var s = document.createElement('script');
+    s.src = src;
+    s.async = true;
+    s.onload = onload;
+    s.onerror = onload;
+    document.body.appendChild(s);
+  }
+
+  function run() {
+    if (source === 1) {
+      fetch('https://v1.hitokoto.cn').then(function (r) { return r.json(); }).then(function (data) {
+        var strings = sub.slice();
+        if (data && data.hitokoto) {
+          strings.unshift(data.hitokoto, '出自 ' + (data.from || ''));
+        }
+        startTyped(strings);
+      }).catch(function () { startTyped(sub); });
+    } else if (source === 2) {
+      loadScript('https://yijuzhan.com/api/word.php?m=js', function () {
+        var strings = sub.slice();
+        if (typeof str !== 'undefined' && str && str[0]) {
+          strings.unshift(str[0], '出自 ' + (str[1] || ''));
+        }
+        startTyped(strings);
+      });
+    } else if (source === 3) {
+      loadScript('https://sdk.jinrishici.com/v2/browser/jinrishici.js', function () {
+        if (typeof jinrishici !== 'undefined' && jinrishici.load) {
+          jinrishici.load(function (result) {
+            var strings = sub.slice();
+            if (result && result.data && result.data.content) strings.unshift(result.data.content);
+            startTyped(strings);
+          });
+        } else {
+          startTyped(sub);
+        }
+      });
+    } else {
+      startTyped(sub);
+    }
+  }
+
+  if (typeof getScript === 'function') {
+    getScript(<%- JSON.stringify(tCdn) %>).then(run);
+  } else {
+    loadScript(<%- JSON.stringify(tCdn) %>, run);
+  }
+})();
+</script>
+<% } %>

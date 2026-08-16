@@ -154,6 +154,9 @@ language: en
 - **代码块 UI**：语言徽标、复制 / 折叠、多套代码主题、行号单击高亮与双击复制。
 - **写作标签**：兼容 NexT 的 `{% note %}` 与 `{% tabs %}`，并支持 VitePress 风格 `:::` note 容器。
 - **内置页面**：归档、分类、标签，以及读取 `source/_data/links.yml` 的分组友链页。
+- **留言板**：`type: guestbook` 把页面评论重渲染为手账留言墙，支持 Twikoo / Artalk，纸色与歪斜角度按留言确定性派生，随机 / 最新排序可切换。
+- **打字机效果**：页脚版权行右侧与首页开屏 bio 支持 anzhiyu 风格打字机（Typed.js），内容接口兼容一言 / 一句网 / 今日诗词，也可自定义 `sub` 列表循环。
+- **页脚图标链接**：`footer.links` 条目支持纯图标链接（`icons` 数组，如 Font Awesome CC 标记），`powered.position: end` 可把主题署名追加到链接行尾。
 - **多语言界面**：内置简体中文与英文界面文案，根据 Hexo `language` 配置选择并回退到 `zh-CN`；附带 `_config.yml` 与 `_config.en.yml` 两份配置。
 - **可选集成**：Twikoo、Artalk、Fancybox、Umami、Google Analytics 4、AdSense、自定义 HTML 注入与 RSS 资料链接。
 

@@ -233,6 +233,28 @@ home_hero:
 - `stickers.items` 可添加图片贴纸；自定义贴纸最多渲染 5 张，加上内置便签后开屏最多 6 个 sticker。`image` 必填，`link` 可选，`size` 可选并限制在 48 到 180 像素。带 `link` 的贴纸会先弹出访问确认气泡，文案使用 `alt`，例如“要访问 GitHub 吗？”。
 - 底部贴纸按钮会滚入首页内容；`cta_text` 可修改可见文字，`cta_link` 可改成其它锚点，并会避开顶部导航遮挡。`cta_background` 默认使用中性的内置 `01`，也可设置为 `01`-`09`、`random`，或 `/images/my-cta.webp` 这样的自定义图片路径。
 
+`typed` 把 bio 位置渲染为 anzhiyu 风格打字机，默认关闭（`enable: false` 时显示普通 bio）：
+
+- `effect`：`true` 打字效果；`false` 直接显示首条内容
+- `loop`：是否循环
+- `start_delay` / `type_speed` / `back_speed`：Typed.js 速度参数（毫秒）
+- `source`：内容接口，兼容 anzhiyu `footerBar.subTitle`：
+  - `false`：仅使用 `sub` 列表
+  - `1`：一言（https://hitokoto.cn）——接口内容先显示，随后循环 `sub`
+  - `2`：一句网（https://yijuzhan.com）
+  - `3`：今日诗词（https://www.jinrishici.com）
+- `sub`：兜底/附加文字列表；接口不可用时直接使用 `sub`
+
+```yaml
+home_hero:
+  enable: true
+  typed:
+    enable: true
+    source: 1
+    sub:
+      - 桃李春风一杯酒，江湖夜雨十年灯
+```
+
 ## 文章相关
 
 ```yaml
@@ -390,6 +412,16 @@ footer:
     prefix: Powered by Theme
     name: FlatPaper
     link: https://github.com/Homulilly/hexo-theme-flatpaper
+    # position: end
+  typed:
+    enable: false
+    effect: true
+    loop: true
+    start_delay: 300
+    type_speed: 150
+    back_speed: 50
+    sub:
+      - 桃李春风一杯酒，江湖夜雨十年灯.
   links:
     -
       - name: 服务条款
@@ -414,9 +446,19 @@ footer:
 - `prefix`：署名前缀，默认 `Powered by Theme`
 - `name`：主题名称，默认 `FlatPaper`
 - `link`：主题链接，默认 FlatPaper 仓库
+- `position: end`：署名追加到 `links` 最后一行末尾（署名在最右）；默认独立一行在前
 - 也可以直接写 `powered: false` 关闭整段主题署名
 
-`links` 负责额外链接。一维列表会渲染为一行；二维列表会按行渲染，同一行内默认用 ` · ` 分隔。外部 `http(s)` 链接会自动在新标签页打开。
+`typed` 在 `left` 版权文字右侧渲染 anzhiyu 风格打字机效果，默认关闭：
+
+- `enable`：`true` 开启
+- `effect`：`true` 打字效果；`false` 直接显示 `sub` 首行
+- `loop`：是否循环打字
+- `start_delay` / `type_speed` / `back_speed`：Typed.js 速度参数（毫秒）
+- `cdn`：可覆盖 Typed.js 加载地址（默认 jsDelivr）
+- `sub`：打字内容列表；为空时使用站点 `subtitle`
+
+`links` 负责额外链接。一维列表会渲染为一行；二维列表会按行渲染，同一行内默认用 ` · ` 分隔。外部 `http(s)` 链接会自动在新标签页打开。条目支持纯图标链接（省略 `name`，配置 `icons` 数组，如 `fa-regular:copyright`），`title` / `aria-label` 提供可访问性文字。
 
 关闭主题署名时：
 

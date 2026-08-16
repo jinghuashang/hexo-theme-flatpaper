@@ -109,6 +109,9 @@ welcome:
 
 # 首页开屏大图。默认关闭，不影响已有站点；仅在首页第一页渲染。
 # 开启后默认复用 profile 的头像、简介、社交链接与 RSS，也可以在这里覆盖。
+# typed: bio 位置打字机（anzhiyu footerBar.subTitle 兼容）
+#   source: false 仅 sub | 1 一言 hitokoto.cn | 2 一句网 yijuzhan.com | 3 今日诗词 jinrishici.com
+#   接口内容先显示，随后循环 sub 列表
 home_hero:
   enable: false
   # title: 我的手账
@@ -149,6 +152,17 @@ home_hero:
     draggable: true
     # 内置便签贴纸的文字。
     # note_text: 今日
+  # bio 位置打字机（anzhiyu footerBar.subTitle 兼容），默认关闭：
+  # typed:
+  #   enable: true
+  #   effect: true
+  #   loop: true
+  #   start_delay: 300
+  #   type_speed: 150
+  #   back_speed: 50
+  #   source: 1
+  #   sub:
+  #     - 桃李春风一杯酒，江湖夜雨十年灯
     # 自定义图片贴纸最多渲染 5 张；加上内置便签后，开屏最多 6 个 sticker。link 可选，不配置则只是可拖动装饰。
     # items:
     #   - image: /images/stickers/memo.png
@@ -252,7 +266,12 @@ tape:
 # 页脚：
 # - left 支持 HTML；占位符：{year}=当前年份，{name}=站点 _config.yml 的 author
 # - powered 负责主题署名；设为 false 或配置 enable: false 可关闭
+#   position: start（默认，独立一行在前）| end（追加到 links 最后一行末尾，署名在最右）
 # - links 支持一维链接列表（一行）或二维链接列表（多行），同一行内用 " · " 分隔
+#   条目支持 name/link/title；仅图标时省略 name，配置 icons 数组即可（如 fa-regular:copyright）
+# - typed: © 版权行右侧的 anzhiyu 风格打字机效果；默认关闭
+#   effect: true 打字 | false 直接显示 sub 首行；loop 循环；start_delay/type_speed/back_speed 速度参数
+#   cdn 可覆盖 Typed.js 加载地址；sub 为打字内容列表
 # 不配置 footer 时默认：左 "© {year} {author}"，右 "Powered by Theme FlatPaper"
 footer:
   left: '© {year} By {name}'
@@ -261,6 +280,17 @@ footer:
     prefix: Powered by Theme
     name: FlatPaper
     link: https://github.com/Homulilly/hexo-theme-flatpaper
+    # position: end
+  typed:
+    enable: false
+    effect: true
+    loop: true
+    start_delay: 300
+    type_speed: 150
+    back_speed: 50
+    # cdn: https://cdn.jsdelivr.net/npm/typed.js@2.1.0/dist/typed.umd.js
+    sub:
+      - 桃李春风一杯酒，江湖夜雨十年灯.
   links:
     # -
     #   - name: 服务条款

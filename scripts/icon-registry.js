@@ -191,6 +191,9 @@ function collectIconFields(value, target) {
   Object.keys(value).forEach((key) => {
     const item = value[key];
     if (key.toLowerCase() === 'icon') addIconName(item, target);
+    if (key.toLowerCase() === 'icons' && Array.isArray(item)) {
+      item.forEach((ic) => addIconName(ic, target));
+    }
     collectIconFields(item, target);
   });
 }

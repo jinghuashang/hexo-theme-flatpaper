@@ -152,6 +152,9 @@ language: en
 - **Code block UI**: language badge, copy/collapse controls, multiple code themes, and line-number click/double-click interactions.
 - **Custom writing blocks**: NexT-compatible `{% note %}` and `{% tabs %}`, plus VitePress-style `:::` note containers.
 - **Built-in pages**: archives, categories, tags, and grouped friend links from `source/_data/links.yml`.
+- **Guestbook**: `type: guestbook` re-renders the page comments as a scrapbook message wall (Twikoo / Artalk). Sticker colors and tilts derive deterministically from comment ids, with random/latest sorting.
+- **Typewriter effect**: anzhiyu-style typed text (Typed.js) next to the footer copyright line and in the home hero bio. Content sources are compatible with hitokoto / yijuzhan / jinrishici, or a custom `sub` list.
+- **Footer icon links**: `footer.links` entries support icon-only links via an `icons` array (e.g. Font Awesome CC marks), and `powered.position: end` appends the theme credit to the end of the link row.
 - **Multi-language UI**: built-in interface text in Simplified Chinese and English, selected from the Hexo `language` setting with a `zh-CN` fallback; ships both `_config.yml` and `_config.en.yml`.
 - **Optional integrations**: Twikoo, Artalk, Fancybox, Umami, Google Analytics 4, AdSense, custom HTML injection, and RSS profile links.
 
