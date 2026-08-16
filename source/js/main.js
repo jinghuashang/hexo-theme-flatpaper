@@ -2190,5 +2190,29 @@
     }
   }
 
+  // ---- Home modules reveal-on-scroll ----
+  // Fade up home-page blocks (post cards, featured, sidebar cards, etc.)
+  // when they enter the viewport. Elements opt in via the `reveal` class;
+  // reduced-motion users get plain visibility via CSS.
+  var revealObserver = null;
+  function initReveal() {
+    var targets = document.querySelectorAll('.reveal');
+    if (!targets.length) return;
+    if (!('IntersectionObserver' in window)) {
+      for (var i = 0; i < targets.length; i++) targets[i].classList.add('is-revealed');
+      return;
+    }
+    revealObserver = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-revealed');
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.05 });
+    targets.forEach(function (el) { revealObserver.observe(el); });
+  }
+  initReveal();
+
   bindGlobalOnce();
 })();

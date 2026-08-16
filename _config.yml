@@ -141,6 +141,15 @@ home_hero:
   # 移动端是否继续显示背景图；设为 false 时窄屏回退到纸张背景。
   mobile_image: true
   #
+  # Medium 风格渐进加载（anzhiyu imgloaded 移植）。开启后 hero 背景由
+  # 小图模糊 -> 大图淡入接管，滚动时随 --process 渐隐缩放；默认关闭。
+  # progressive_load:
+  #   enable: true
+  #   small_src: https://imgapi.jinghuashang.cn/random?sort=pc   # 小图（<100k）
+  #   large_src: https://imgapi.jinghuashang.cn/random?sort=pc   # 大图
+  #   mobile_small_src: https://imgapi.jinghuashang.cn/random?sort=sp
+  #   mobile_large_src: https://imgapi.jinghuashang.cn/random?sort=sp
+  #
   # 背景图暗色遮罩透明度：[顶部, 底部]，范围 0-1。
   # image_overlay: [0.2, 0.2]
   # 底部贴纸按钮的文字与目标锚点；默认进入首页内容区。

@@ -931,3 +931,87 @@ body.has-home-hero.is-hero-active::before {
     animation: none;
   }
 }
+
+/* ============== PROGRESSIVE LOAD (anzhiyu imgloaded port) ============== */
+/* Medium-style hero backdrop: small blurred image first, large image fades
+   in on load; scroll drives --process (opacity/scale/blur). Layers below
+   the scrapbook texture (grain) and content. */
+
+.pl-container {
+  position: absolute;
+  inset: 0;
+  z-index: -3;
+  overflow: hidden;
+  opacity: calc(1 - var(--process, 0) * 1);
+  transform: scale(calc(1 + var(--process, 0) * 0.1));
+  filter: blur(calc(var(--process, 0) * 10px));
+  animation: blur-to-clear 2.5s cubic-bezier(0.6, 0.25, 0.25, 1) 0s 1 backwards, scale-in 2.2s cubic-bezier(0.6, 0.1, 0.25, 1) 0.5s 1 backwards;
+  will-change: opacity, transform, filter;
+}
+
+.pl-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  opacity: 0.1;
+  transition: opacity 1s;
+  will-change: transform, opacity;
+}
+
+.pl-visible {
+  opacity: 1;
+}
+
+/* Small placeholder image: heavy gaussian blur hides compression artifacts */
+.pl-blur {
+  filter: blur(50px);
+  transform: scale(1.05);
+}
+
+.pl-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+  background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAKUlEQVQImU3IMREAIAgAwJfNkQCEsH8cijjpMf6vnXlQaIiJFx+omEBfmqIEZLe2jzcAAAAASUVORK5CYII=");
+}
+
+.pl-video.pl-visible {
+  display: block;
+}
+
+@keyframes blur-to-clear {
+  0% {
+    filter: blur(50px);
+    opacity: 1;
+  }
+  100% {
+    filter: blur(0);
+    opacity: 1;
+  }
+}
+
+@keyframes scale-in {
+  0% {
+    transform: scale(1.5) translateZ(0);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1) translateZ(0);
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pl-container,
+  .pl-img {
+    animation: none;
+    transition: none;
+  }
+}

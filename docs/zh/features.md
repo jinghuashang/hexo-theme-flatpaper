@@ -38,6 +38,39 @@ Hero 默认关闭；只有设置 `home_hero.enable: true` 后才会替换普通�
 
 可用配置见[配置说明 → 首页开屏](configuration.md#首页开屏)。
 
+### 渐进式大图加载
+
+`home_hero.progressive_load` 为开屏背景启用 Medium 风格渐进加载（移植自 anzhiyu 主题的 imgloaded.js）：
+
+```yaml
+home_hero:
+  enable: true
+  progressive_load:
+    enable: true
+    small_src: https://imgapi.jinghuashang.cn/random?sort=pc  # 小图（尽量 <100k）
+    large_src: https://imgapi.jinghuashang.cn/random?sort=pc  # 大图（最终显示）
+    mobile_small_src: https://imgapi.jinghuashang.cn/random?sort=sp
+    mobile_large_src: https://imgapi.jinghuashang.cn/random?sort=sp
+```
+
+行为：
+
+- 小图先加载并以 50px 高斯模糊铺满开屏（隐藏压缩噪点），大图加载完成后淡入
+- 入场 `blur-to-clear` + `scale`（1.5 → 1）动画
+- 滚动时通过 `--process`（`scrollY / innerHeight`）驱动透明度渐隐、缩放放大、模糊增强
+- 移动端（≤767px）自动切换 `mobile_*` 图源
+- 开启后 hero 自身背景图不再渲染（由渐进层接管）；`prefers-reduced-motion` 关闭动画
+- 实现为 `source/js/progressive-load.js`，配置经 `data-*` 属性传入，无第三方依赖
+
+### 首页滚动渐入
+
+首页模块（featured 轮播、文章卡片、侧栏卡片）进入视口时逐个上浮渐显：
+
+- 元素带 `reveal` 类，`main.js` 用 IntersectionObserver 在进入视口时添加 `is-revealed`
+- 文章卡片按索引交错延迟（每 60ms 递增,上限 300ms）
+- 仅触发一次；`prefers-reduced-motion` 下直接显示
+- 自定义页面可用同样方法：给元素加 `reveal` 类即可
+
 ## 封面图
 
 文章卡片和精选图按以下顺序解析：

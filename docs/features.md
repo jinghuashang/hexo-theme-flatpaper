@@ -38,6 +38,39 @@ The hero is disabled by default, so existing sites keep the normal home layout u
 
 See [Configuration → Home Opening Hero](configuration.md#home-opening-hero) for the available options.
 
+### Progressive Hero Image
+
+`home_hero.progressive_load` enables medium-style progressive loading for the hero backdrop (ported from the anzhiyu theme's imgloaded.js):
+
+```yaml
+home_hero:
+  enable: true
+  progressive_load:
+    enable: true
+    small_src: https://imgapi.jinghuashang.cn/random?sort=pc  # small image (keep <100k)
+    large_src: https://imgapi.jinghuashang.cn/random?sort=pc  # large image (final)
+    mobile_small_src: https://imgapi.jinghuashang.cn/random?sort=sp
+    mobile_large_src: https://imgapi.jinghuashang.cn/random?sort=sp
+```
+
+Behavior:
+
+- The small image loads first and fills the hero under a 50px gaussian blur (hiding compression artifacts); the large image fades in once loaded
+- Entrance uses `blur-to-clear` + `scale` (1.5 → 1) animations
+- Scrolling drives opacity fade, zoom, and blur via `--process` (`scrollY / innerHeight`)
+- Mobile (≤767px) automatically uses the `mobile_*` sources
+- When enabled, the hero's own background image is skipped (the progressive layer takes over); `prefers-reduced-motion` disables the animation
+- Implemented as `source/js/progressive-load.js`; config arrives via `data-*` attributes, no third-party dependencies
+
+### Reveal on Scroll
+
+Home modules (featured carousel, post cards, sidebar cards) fade up one by one as they enter the viewport:
+
+- Elements carry the `reveal` class; `main.js` adds `is-revealed` via IntersectionObserver on first intersection
+- Post cards stagger by index (60ms increments, capped at 300ms)
+- Fires once; `prefers-reduced-motion` shows content immediately
+- Custom pages can reuse it: just add the `reveal` class to any element
+
 ## Cover Images
 
 Post card and featured images are resolved in this order:

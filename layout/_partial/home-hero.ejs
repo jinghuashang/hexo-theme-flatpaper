@@ -8,6 +8,8 @@ var heroSubtitle = hero.subtitle || profile.role || '';
 var heroBio = hero.bio || profile.bio || flatpaper_i18n('profile.default_bio');
 var heroTyped = hero.typed && typeof hero.typed === 'object' ? hero.typed : {};
 var heroTypedEnable = heroTyped.enable === true;
+var heroProgressive = hero.progressive_load && typeof hero.progressive_load === 'object' ? hero.progressive_load : {};
+var heroProgressiveEnable = heroProgressive.enable === true;
 var heroAvatar = hero.avatar || profile.avatar;
 var avatarShape = hero.avatar_shape || profile.avatar_shape || 'square';
 var stickers = hero.stickers;
@@ -65,7 +67,7 @@ function heroImageOverlay(value) {
 }
 
 var configuredHeroImages = Array.isArray(hero.image) ? hero.image : (hero.image ? [hero.image] : []);
-var heroImages = configuredHeroImages.map(heroImageUrl).filter(Boolean);
+var heroImages = heroProgressiveEnable ? [] : configuredHeroImages.map(heroImageUrl).filter(Boolean);
 var heroImage = heroImages[0] || '';
 var heroMobileImage = heroImage && hero.mobile_image !== false;
 // Escape backslash/quote before embedding in a CSS url("...") string, mirroring
@@ -140,6 +142,17 @@ var hasLinkedCustomStickers = customStickerItems.some(function (item) { return !
   <% if (heroImage) { %>style="--hero-bg-image: url(&quot;<%= heroImageCss %>&quot;); --hero-image-overlay-top: rgba(42, 33, 22, <%= heroOverlay.top %>); --hero-image-overlay-bottom: rgba(42, 33, 22, <%= heroOverlay.bottom %>);"<% } %>
   <% if (heroImages.length > 1) { %>data-hero-images="<%= JSON.stringify(heroImages) %>"<% } %>
 >
+  <% if (heroProgressiveEnable) { %>
+    <div
+      class="pl-container"
+      data-pl-small="<%= flatpaper_safe_url(url_for(String(heroProgressive.small_src || '')), 'image') %>"
+      data-pl-large="<%= flatpaper_safe_url(url_for(String(heroProgressive.large_src || '')), 'image') %>"
+      data-pl-mobile-small="<%= flatpaper_safe_url(url_for(String(heroProgressive.mobile_small_src || heroProgressive.small_src || '')), 'image') %>"
+      data-pl-mobile-large="<%= flatpaper_safe_url(url_for(String(heroProgressive.mobile_large_src || heroProgressive.large_src || '')), 'image') %>"
+      hidden
+    ></div>
+    <script src="<%= url_for('/js/progressive-load.js') %>" defer></script>
+  <% } %>
   <div class="home-hero__grain" aria-hidden="true"></div>
   <div class="home-hero__tools" aria-label="<%= flatpaper_i18n('home_hero.tools') %>">
     <% if (stickersEnabled && stickersDraggable) { %>

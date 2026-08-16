@@ -1,0 +1,26 @@
+/* ============== REVEAL-ON-SCROLL ============== */
+/* Home modules fade up as they enter the viewport. Elements opt in with the
+   `reveal` class; main.js adds `is-revealed` via IntersectionObserver.
+   Reduced-motion users see content immediately (opacity stays 1). */
+
+.reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity 0.55s ease,
+    transform 0.55s cubic-bezier(0.22, 0.61, 0.36, 1);
+  will-change: opacity, transform;
+}
+
+.reveal.is-revealed {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
