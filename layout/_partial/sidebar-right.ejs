@@ -182,6 +182,8 @@ var menuChildren = __menu.children, menuHref = __menu.href, menuIcon = __menu.ic
     </div>
   </section>
 
+  <%- partial('_partial/sidebar-welcome') %>
+
   <% if (theme.nav && theme.nav.enable && theme.nav.menu && theme.nav.menu.length) { %>
     <section class="side-card brand-link-card" aria-label="<%= flatpaper_i18n('navigation.site_links') %>">
       <% (theme.nav.menu || []).forEach(function(group) { %>

@@ -107,6 +107,18 @@ welcome:
   # 支持站内相对路径（如 /images/welcome.jpg，放在站点 source/ 下）或绝对 URL。
   # image:
 
+# 侧边栏个性定位欢迎卡片（profile 卡片下方，kouseki 风格，默认关闭）：
+# 基于腾讯位置服务 WebServiceAPI 获取访客 IP 归属地，按国家 / 省份 / 城市
+# 显示定制欢迎语，并计算访客与博主之间的距离。需要先在
+# https://lbs.qq.com/dev/console/application/mine 创建应用并勾选 WebServiceAPI。
+welcome_location:
+  enable: false
+  key:                                # 腾讯位置服务 WebServiceAPI Key
+  longitude:                          # 博主所在经度，例如 105.43501
+  latitude:                           # 博主所在纬度，例如 28.87875
+  unit: 公里                          # 距离单位
+  ipv6_text: 好复杂，咱看不懂~(ipv6)  # IPv6 地址显示为指定内容
+
 # 首页开屏大图。默认关闭，不影响已有站点；仅在首页第一页渲染。
 # 开启后默认复用 profile 的头像、简介、社交链接与 RSS，也可以在这里覆盖。
 # typed: bio 位置打字机（anzhiyu footerBar.subTitle 兼容）
