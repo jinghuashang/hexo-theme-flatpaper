@@ -40,36 +40,35 @@ Hero 默认关闭；只有设置 `home_hero.enable: true` 后才会替换普通�
 
 ### 渐进式大图加载
 
-`home_hero.progressive_load` 为开屏背景启用 Medium 风格渐进加载（移植自 anzhiyu 主题的 imgloaded.js）：
+`home_hero.image_progressive` 为开屏背景启用 Medium 风格的渐进加载与滚动离场：
 
 ```yaml
 home_hero:
   enable: true
-  progressive_load:
-    enable: true
-    small_src: https://imgapi.jinghuashang.cn/random?sort=pc  # 小图（尽量 <100k）
-    large_src: https://imgapi.jinghuashang.cn/random?sort=pc  # 大图（最终显示）
-    mobile_small_src: https://imgapi.jinghuashang.cn/random?sort=sp
-    mobile_large_src: https://imgapi.jinghuashang.cn/random?sort=sp
+  image: /images/hero.jpg
+  image_progressive: true
+  image_placeholder: /images/hero-lqip.jpg   # 可选
 ```
 
-行为：
+- 先铺一张高斯模糊的小图（`image_placeholder`），背景大图解码完成后淡出交接；未配置小图时模糊层用纸面底色，仍有淡入
+- 入场：照片层延迟 0.5s 后从 `scale(1.5)` 缩回 `1` 并由透明淡入，2.2s（沿用 pr-9 的时序与曲线）
+- 滚动离场：照片层放大 `+0.1` 并随进度线性渐隐至全透明。淡出只作用在照片层（位于贴纸与 profile 卡片之下），内容不受影响
+- **渐进加载是 `image` 的加载表现，不是第二个图源**：照片层由模板渲染、始终存在、消费同一个 `--hero-bg-image`，所以 `image_overlay`、`mobile_image`、多图轮播全部照常生效
+- 失败即降级：图片 404、脚本报错、`main.js` 未执行或禁用 JS 时，直接显示 `image` 本身（模糊层带 `hidden`，由紧随其后的内联脚本解除，2 秒内没人接管就重新藏回去）
+- 只用 `transform` 与 `opacity` 驱动滚动，不用 `filter`，避免全屏模糊的逐帧重栅格化
+- `prefers-reduced-motion` 下不注册滚动监听
+- `image_placeholder` 不要填随机图接口，否则模糊层预览的是另一张照片
 
-- 小图先加载并以 50px 高斯模糊铺满开屏（隐藏压缩噪点），大图加载完成后淡入
-- 入场 `blur-to-clear` + `scale`（1.5 → 1）动画
-- 滚动时通过 `--process`（`scrollY / innerHeight`）驱动透明度渐隐、缩放放大、模糊增强
-- 移动端（≤767px）自动切换 `mobile_*` 图源
-- 开启后 hero 自身背景图不再渲染（由渐进层接管）；`prefers-reduced-motion` 关闭动画
-- 实现为 `source/js/progressive-load.js`，配置经 `data-*` 属性传入，无第三方依赖
+### 滚动渐入
 
-### 首页滚动渐入
+首页模块（featured 轮播、章节标题、文章卡片，以及侧栏的 profile / 分类 / 标签卡）进入视口时逐个上浮渐显：
 
-首页模块（featured 轮播、文章卡片、侧栏卡片）进入视口时逐个上浮渐显：
-
-- 元素带 `reveal` 类，`main.js` 用 IntersectionObserver 在进入视口时添加 `is-revealed`
-- 文章卡片按索引交错延迟（每 60ms 递增,上限 300ms）
-- 仅触发一次；`prefers-reduced-motion` 下直接显示
-- 自定义页面可用同样方法：给元素加 `reveal` 类即可
+- 元素带 `reveal` 类，`main.js` 用 IntersectionObserver 在进入视口时添加 `is-revealed`，只触发一次
+- 文章卡片按索引交错出场（每 60ms 递增，上限 300ms），延迟通过 `--reveal-delay` 自定义属性传入，不会影响卡片自身的 hover 过渡
+- 出场动画结束后不残留任何 `transform` 声明，因此卡片的 hover 抬升照常生效
+- 隐藏由 `<html class="reveal-ready">` 控制，该类由 head 内联脚本在首屏绘制前添加。没有 JS、浏览器不支持 IntersectionObserver、或 `main.js` 未能执行时都不会隐藏（最后一种由 2 秒兜底移除该类），内容始终可见
+- `prefers-reduced-motion` 下直接显示，不做动画
+- 自定义页面给元素加 `reveal` 类即可复用；需要错开出场时再加内联 `--reveal-delay`
 
 ## 封面图
 
@@ -180,38 +179,6 @@ home_hero:
 - **循环配色**：`--p1` 到 `--p5` 五个纸色档位（红/蓝/绿/橙/紫），胶带颜色随纸色切换。
 - **头像**：`no-zoom` 圆形头像贴在右上角；省略 `img` 时可用 `.reward-list__avatar--text` 显示名字首字符回退。
 - **响应式**：桌面多列自动排布，窄屏降为单列；支持深色模式与 `prefers-reduced-motion`。
-
-## 侧边栏定位欢迎卡片
-
-`welcome_location` 在右侧栏 profile 卡片下方渲染一张基于访客 IP 归属地的欢迎卡片（kouseki 风格），默认关闭。
-
-```yaml
-welcome_location:
-  enable: true
-  key: 你的腾讯位置服务WebServiceAPI Key
-  longitude: 105.43501   # 博主所在经度
-  latitude: 28.87875     # 博主所在纬度
-  unit: 公里             # 距离单位
-  ipv6_text: 好复杂，咱看不懂~(ipv6)
-```
-
-前置条件：
-
-1. 到[腾讯位置服务控制台](https://lbs.qq.com/dev/console/application/mine)创建应用，添加一个勾选了 `WebServiceAPI` 的 Key
-2. 配置 `key`，以及博主所在位置的经纬度（可用地图工具拾取）
-
-效果：
-
-- 根据访客 IP 解析国家 / 省份 / 城市，显示对应定制欢迎语（内置全国省份及主要国家文案表）
-- 计算访客与博主之间的距离（球面距离）
-- 显示访客 IP 地址；IPv6 地址按 `ipv6_text` 显示
-- 按本地时间切换时段问候（早 / 午 / 下午 / 傍晚 / 夜）
-
-实现说明：
-
-- 原生 JSONP 请求 `apis.map.qq.com`，不依赖 jQuery
-- 卡片标题使用工牌图标（`id-card-lanyard`）
-- 定位失败时显示「定位失败」；卡片在移动端侧栏抽屉中同样生效
 
 ## 多语言界面
 

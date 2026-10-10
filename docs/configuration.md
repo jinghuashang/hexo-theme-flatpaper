@@ -224,7 +224,7 @@ home_hero:
 - Default is `enable: false`, so existing home pages are unchanged. It renders only on page 1 of the home pagination.
 - When `title`, `subtitle`, `bio`, `avatar`, or social links are omitted, the hero reuses the site title and `profile` config.
 - Leave `image` empty to use the built-in scrapbook paper background. Set it to a string for one fixed image, or to an array so the browser randomly picks one on each page load. Images fill the opening screen on wider viewports and narrow screens by default.
-- `mobile_image: false` makes narrow screens fall back to the paper background so stickers stay readable.
+- `mobile_image` is both a switch and a source: `true` (default) reuses `image`; `false` makes narrow screens fall back to the paper background so stickers stay readable; a URL such as `/images/hero-mobile.jpg` gives narrow screens (≤760px) their own image, which is handy for a portrait crop. With a dedicated mobile source the hero stays in photo mode, so text and button colours are unchanged; that source never joins the random rotation over the `image` array and is always fixed. Under `image_progressive` the mobile image is the one preloaded on narrow screens, while the blur layer still reuses `image_placeholder`.
 - `image_overlay` controls the configurable dark overlay on image heroes. Use `[top, bottom]` opacity values from `0` to `1`; the default is `[0.2, 0.2]`.
 - `hero_links` adds quick navigation links between the hero bio and social links. When present, it replaces the default wavy divider. Each item needs `name` and `link`; `alt` is optional and is used for labels and external-link confirmation prompts. External links open in a new tab after a visit confirmation.
 - Social links in the hero reuse the profile `.socials` styling, tooltip text, and `buttons.style` option.
@@ -409,16 +409,7 @@ footer:
     prefix: Powered by Theme
     name: FlatPaper
     link: https://github.com/Homulilly/hexo-theme-flatpaper
-    # position: end
-  typed:
-    enable: false
-    effect: true
-    loop: true
-    start_delay: 300
-    type_speed: 150
-    back_speed: 50
-    sub:
-      - 桃李春风一杯酒，江湖夜雨十年灯.
+    row: first
   links:
     -
       - name: Terms
@@ -443,19 +434,42 @@ footer:
 - `prefix`: credit prefix, default `Powered by Theme`
 - `name`: theme name, default `FlatPaper`
 - `link`: theme link, default FlatPaper repository
-- `position: end`: append the credit to the end of the last `links` row (credit rightmost); by default it is its own leading row
+- `row`: which row the credit sits in, default `first`
+  - `first`: appended to the end of the first link row (rightmost on that row)
+  - `last`: appended to the end of the last link row
+  - `own`: its own row, above every link row
 - You can also set `powered: false` to disable the whole theme credit
 
-`typed` renders an anzhiyu-style typewriter effect right after the `left` copyright text. Disabled by default:
+The credit is inserted as a link item in its row, so the separator between it and the neighbouring links follows that row's `separator` setting. With no `links` configured the credit takes a row of its own.
 
-- `enable`: `true` to enable
-- `effect`: `true` for typing animation; `false` shows the first `sub` line statically
-- `loop`: loop the typing
-- `start_delay` / `type_speed` / `back_speed`: Typed.js speed parameters (ms)
-- `cdn`: override the Typed.js script URL (default jsDelivr)
-- `sub`: list of strings to type; falls back to the site `subtitle` when empty
+`links` controls extra footer links. A flat list renders as one row; nested lists render as multiple rows. Links in the same row use ` · ` as the separator by default. External `http(s)` links open in a new tab automatically.
 
-`links` controls extra footer links. A flat list renders as one row; nested lists render as multiple rows. Links in the same row use ` · ` as the separator by default. External `http(s)` links open in a new tab automatically. Entries support icon-only links (omit `name`, provide an `icons` array such as `fa-regular:copyright`); `title` / `aria-label` supply accessible text.
+Link entries accept these fields:
+
+- `name` / `text`: visible text, resolved in that order
+- `link`: target URL; omit it to render plain text
+- `icons`: array of icon names rendered before the text; set `icons` without `name` for an icon-only link
+- `icon`: a single icon, equivalent to a one-item `icons`
+- `iconSize`: icon size, default `1em` (follows the footer font size)
+- `title`: emitted as the `title` attribute and **not** shown as text, which is what keeps entries with `icons` icon-only. It falls back to visible text only when the entry has neither `name` / `text` nor `icons`, so such an entry never renders as an empty link
+- `aria-label`: accessible name; icon-only links fall back to `title` when it is not set
+
+Filing numbers and CC licence icons:
+
+```yaml
+footer:
+  links:
+    - name: ICP License XXXXXXXX
+      link: https://beian.miit.gov.cn/
+    - link: /copyright
+      title: Copyright
+      aria-label: Copyright
+      icons:
+        - fa-regular:copyright
+        - fa-brands:creative-commons-by
+        - fa-brands:creative-commons-nc
+        - fa-brands:creative-commons-nd
+```
 
 To hide the theme credit:
 
@@ -463,6 +477,31 @@ To hide the theme credit:
 footer:
   powered: false
 ```
+
+### Typewriter Effect
+
+`footer.typed` renders an anzhiyu-style typewriter next to the copyright line; `home_hero.typed` takes over the hero bio slot with the same fields. Both are disabled by default.
+
+```yaml
+footer:
+  typed:
+    enable: true
+    effect: true        # false shows the first sub entry without typing
+    loop: true
+    start_delay: 300
+    type_speed: 150
+    back_speed: 50
+    source: 1           # false = sub only | 1 = hitokoto | 2 = yijuzhan | 3 = jinrishici
+    # cdn: https://cdn.jsdelivr.net/npm/typed.js@2.1.0/dist/typed.umd.js
+    sub:
+      - Write the days down slowly
+```
+
+- The fetched quote shows first, then the `sub` list loops; sources `1` and `2` append a "from …" line (localised)
+- When `sub` is empty: `home_hero.typed` falls back to `home_hero.bio` / `profile.bio`, `footer.typed` to the site `subtitle`
+- Typed.js is loaded on demand and requested only once even with both slots enabled
+- **A failed load never leaves the slot empty**: on a CDN error or a 6s timeout the first entry is shown as plain text; with `effect: false` Typed.js is not loaded at all
+- If the quote endpoint fails it falls back to the `sub` list
 
 ## Note Blocks
 

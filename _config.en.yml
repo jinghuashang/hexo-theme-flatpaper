@@ -124,8 +124,35 @@ home_hero:
   # image:
   #   - /images/hero-1.jpg
   #   - /images/hero-2.jpg
-  # Keep the background image on mobile. Set to false to fall back to the paper background on narrow screens.
+  # Background image on mobile: true (default) reuses `image` above, false falls
+  # back to the paper background on narrow screens, and a URL gives narrow
+  # screens (≤760px) their own image — handy for a portrait crop.
+  # A dedicated mobile source never joins the random rotation above; it is fixed.
   mobile_image: true
+  # mobile_image: /images/hero-mobile.jpg
+  # Medium-style progressive loading: a blurred small image paints first and
+  # hands over to the background photo once it decodes, plus a scroll exit
+  # (slight photo scale-up and a fade of the whole hero). Disabled by default.
+  # `image` above stays the only source — this only changes how it loads, so
+  # image_overlay / mobile_image / multi-image rotation all keep working, and a
+  # failed load, a script error or no JS at all simply shows `image` itself.
+  # image_progressive: true
+  # Optional small image for the blur layer (aim for <100k). Without it the
+  # blur layer uses the paper colour and still fades in. Do not point this at a
+  # random-image API, or the blur will preview a different photo.
+  # image_placeholder: /images/hero-lqip.jpg
+  # Typewriter in the bio slot (same fields as footer.typed). Disabled by default.
+  # Falls back to bio / profile.bio when sub is empty.
+  # typed:
+  #   enable: true
+  #   effect: true
+  #   loop: true
+  #   start_delay: 300
+  #   type_speed: 150
+  #   back_speed: 50
+  #   source: 1
+  #   sub:
+  #     - Write the days down slowly
   # Dark overlay opacity for hero images: [top, bottom], range 0-1.
   # image_overlay: [0.2, 0.2]
   # Text and target for the bottom sticker CTA. Defaults to the home content.
@@ -254,7 +281,15 @@ tape:
 # Footer:
 # - left supports HTML. Placeholders: {year}=current year, {name}=site _config.yml author.
 # - powered controls the theme credit. Set powered to false, or set enable: false, to hide it.
+#   row: first (default, appended to the end of the first link row) | last (end of the last row) | own (its own row)
 # - links accepts a flat link list for one row, or nested link lists for multiple rows. Links in one row use " · " as the separator.
+#   Entries accept name / link / title. For icon-only links omit name and set an icons array
+#   (e.g. fa-regular:copyright); aria-label sets the accessible name explicitly.
+# - typed adds a typewriter next to the copyright line. Disabled by default.
+#   effect: true types it out, false shows the first sub entry directly; loop repeats.
+#   source: false = sub only | 1 = hitokoto.cn | 2 = yijuzhan.com | 3 = jinrishici.com.
+#   The fetched quote shows first, then the sub list loops; cdn overrides the Typed.js URL.
+#   If the CDN is unreachable or times out (6s) it falls back to plain text.
 # Defaults when footer is not configured: left "(c) {year} {author}", right "Powered by Theme FlatPaper".
 footer:
   left: '(c) {year} By {name}'
@@ -263,7 +298,30 @@ footer:
     prefix: Powered by Theme
     name: FlatPaper
     link: https://github.com/Homulilly/hexo-theme-flatpaper
+    # row: first
+  typed:
+    enable: false
+    effect: true
+    loop: true
+    start_delay: 300
+    type_speed: 150
+    back_speed: 50
+    # source: 1
+    # cdn: https://cdn.jsdelivr.net/npm/typed.js@2.1.0/dist/typed.umd.js
+    # sub:
+    #     - Write the days down slowly.
   links:
+    # Filing / copyright link examples:
+    # - name: ICP License XXXXXXXX
+    #   link: https://beian.miit.gov.cn/
+    # - link: /copyright
+    #   title: Copyright
+    #   aria-label: Copyright
+    #   icons:
+    #     - fa-regular:copyright
+    #     - fa-brands:creative-commons-by
+    #     - fa-brands:creative-commons-nc
+    #     - fa-brands:creative-commons-nd
     # -
     #   - name: Terms
     #     link: /terms

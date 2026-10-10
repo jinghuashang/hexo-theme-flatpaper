@@ -224,7 +224,7 @@ home_hero:
 - 默认 `enable: false`，不会影响已有首页；只在首页分页第 1 页渲染。
 - 未配置 `title`、`subtitle`、`bio`、`avatar` 或社交链接时，会复用站点标题与 `profile` 配置。
 - `image` 留空时使用内置手账纸张背景；设置为字符串时固定使用该图片，设置为数组时浏览器每次载入会随机使用一张，图片会在宽屏和窄屏默认铺满开屏。
-- `mobile_image: false` 会让窄屏回退到纸张背景，让贴纸保持清晰。
+- `mobile_image` 既是开关也可以是图源：`true`（默认）沿用 `image`；`false` 让窄屏回退到纸张背景，让贴纸保持清晰；填一个链接（如 `/images/hero-mobile.jpg`）则让窄屏（≤760px）单独使用该图片，适合另外准备竖版裁切。单独指定窄屏图源时开屏仍是照片模式，文字与按钮配色不变；该图源不参与 `image` 数组的随机轮播，始终固定这一张。开启 `image_progressive` 时窄屏会自动预载这张窄屏图，模糊层仍复用 `image_placeholder`。
 - `image_overlay` 控制图片开屏的可配置暗色遮罩，使用 `[顶部, 底部]` 两个 `0` 到 `1` 的透明度数值；默认是 `[0.2, 0.2]`。
 - `hero_links` 可在开屏简介和社交链接之间添加快速导航链接；配置后会替代默认的波浪线分隔符。每一项需要 `name` 和 `link`，`alt` 可选，用于标签和外链访问确认文案。外链会先弹出访问确认，再在新标签页打开。
 - 开屏中的社交链接复用 profile 的 `.socials` 样式、tooltip 文案，也会跟随 `buttons.style` 的配置变化。
@@ -419,16 +419,7 @@ footer:
     prefix: Powered by Theme
     name: FlatPaper
     link: https://github.com/Homulilly/hexo-theme-flatpaper
-    # position: end
-  typed:
-    enable: false
-    effect: true
-    loop: true
-    start_delay: 300
-    type_speed: 150
-    back_speed: 50
-    sub:
-      - 桃李春风一杯酒，江湖夜雨十年灯.
+    row: first
   links:
     -
       - name: 服务条款
@@ -453,19 +444,42 @@ footer:
 - `prefix`：署名前缀，默认 `Powered by Theme`
 - `name`：主题名称，默认 `FlatPaper`
 - `link`：主题链接，默认 FlatPaper 仓库
-- `position: end`：署名追加到 `links` 最后一行末尾（署名在最右）；默认独立一行在前
+- `row`：署名所在行，默认 `first`
+  - `first`：并入第一组链接行的末尾（该行最右侧）
+  - `last`：并入最后一组链接行的末尾
+  - `own`：独占一行，排在所有链接行之前
 - 也可以直接写 `powered: false` 关闭整段主题署名
 
-`typed` 在 `left` 版权文字右侧渲染 anzhiyu 风格打字机效果，默认关闭：
+署名作为一个链接条目并入所在行，因此它和同行链接之间的分隔符跟随该行的 `separator` 配置；没有配置 `links` 时署名自动独占一行。
 
-- `enable`：`true` 开启
-- `effect`：`true` 打字效果；`false` 直接显示 `sub` 首行
-- `loop`：是否循环打字
-- `start_delay` / `type_speed` / `back_speed`：Typed.js 速度参数（毫秒）
-- `cdn`：可覆盖 Typed.js 加载地址（默认 jsDelivr）
-- `sub`：打字内容列表；为空时使用站点 `subtitle`
+`links` 负责额外链接。一维列表会渲染为一行；二维列表会按行渲染，同一行内默认用 ` · ` 分隔。外部 `http(s)` 链接会自动在新标签页打开。
 
-`links` 负责额外链接。一维列表会渲染为一行；二维列表会按行渲染，同一行内默认用 ` · ` 分隔。外部 `http(s)` 链接会自动在新标签页打开。条目支持纯图标链接（省略 `name`，配置 `icons` 数组，如 `fa-regular:copyright`），`title` / `aria-label` 提供可访问性文字。
+链接条目支持这些字段：
+
+- `name` / `text`：可见文字，按此顺序回退
+- `link`：目标地址；省略时渲染为纯文本
+- `icons`：图标名数组，渲染在文字之前；只配 `icons` 不配 `name` 即为纯图标链接
+- `icon`：单个图标，等价于只有一项的 `icons`
+- `iconSize`：图标尺寸，默认 `1em`（跟随页脚字号）
+- `title`：作为 `title` 属性输出，**不会**显示为文字 —— 配了 `icons` 的条目因此保持纯图标外观；仅当条目既没有 `name` / `text` 也没有 `icons` 时，`title` 才兜底作为可见文字，避免渲染出空链接
+- `aria-label`：无障碍名称；纯图标链接未配置时自动取 `title`
+
+备案号与 CC 协议图标的写法：
+
+```yaml
+footer:
+  links:
+    - name: 蜀ICP备XXXXXXXX号-X
+      link: https://beian.miit.gov.cn/
+    - link: /copyright
+      title: 版权协议
+      aria-label: 版权协议
+      icons:
+        - fa-regular:copyright
+        - fa-brands:creative-commons-by
+        - fa-brands:creative-commons-nc
+        - fa-brands:creative-commons-nd
+```
 
 关闭主题署名时：
 
@@ -473,6 +487,31 @@ footer:
 footer:
   powered: false
 ```
+
+### 打字机效果
+
+`footer.typed` 在 © 版权行右侧渲染 anzhiyu 风格的打字机；`home_hero.typed` 用同一套字段接管开屏 bio 的位置。两处默认关闭。
+
+```yaml
+footer:
+  typed:
+    enable: true
+    effect: true        # false 时不打字，直接显示 sub 首行
+    loop: true
+    start_delay: 300
+    type_speed: 150
+    back_speed: 50
+    source: 1           # false 仅 sub | 1 一言 | 2 一句网 | 3 今日诗词
+    # cdn: https://cdn.jsdelivr.net/npm/typed.js@2.1.0/dist/typed.umd.js
+    sub:
+      - 桃李春风一杯酒，江湖夜雨十年灯
+```
+
+- `source` 取到的句子先显示，随后循环 `sub` 列表；`1` / `2` 会附带一条「出自 …」（文案走界面语言）
+- `sub` 为空时的回退：`home_hero.typed` 用 `home_hero.bio` / `profile.bio`，`footer.typed` 用站点 `subtitle`
+- Typed.js 按需从 CDN 加载，页脚与开屏同时开启也只请求一次
+- **加载失败不会留空**：CDN 报错或 6 秒未响应时，直接以纯文本显示首条内容；`effect: false` 时完全不加载 Typed.js
+- 句子接口失败时退回 `sub` 列表
 
 ## Note 提示块
 

@@ -40,36 +40,35 @@ See [Configuration → Home Opening Hero](configuration.md#home-opening-hero) fo
 
 ### Progressive Hero Image
 
-`home_hero.progressive_load` enables medium-style progressive loading for the hero backdrop (ported from the anzhiyu theme's imgloaded.js):
+`home_hero.image_progressive` turns on Medium-style progressive loading and a scroll exit for the hero backdrop:
 
 ```yaml
 home_hero:
   enable: true
-  progressive_load:
-    enable: true
-    small_src: https://imgapi.jinghuashang.cn/random?sort=pc  # small image (keep <100k)
-    large_src: https://imgapi.jinghuashang.cn/random?sort=pc  # large image (final)
-    mobile_small_src: https://imgapi.jinghuashang.cn/random?sort=sp
-    mobile_large_src: https://imgapi.jinghuashang.cn/random?sort=sp
+  image: /images/hero.jpg
+  image_progressive: true
+  image_placeholder: /images/hero-lqip.jpg   # optional
 ```
 
-Behavior:
-
-- The small image loads first and fills the hero under a 50px gaussian blur (hiding compression artifacts); the large image fades in once loaded
-- Entrance uses `blur-to-clear` + `scale` (1.5 → 1) animations
-- Scrolling drives opacity fade, zoom, and blur via `--process` (`scrollY / innerHeight`)
-- Mobile (≤767px) automatically uses the `mobile_*` sources
-- When enabled, the hero's own background image is skipped (the progressive layer takes over); `prefers-reduced-motion` disables the animation
-- Implemented as `source/js/progressive-load.js`; config arrives via `data-*` attributes, no third-party dependencies
+- A blurred small image (`image_placeholder`) paints first and fades out once the background photo has decoded; without a placeholder the blur layer uses the paper colour and still fades in
+- Entry: after a 0.5s delay the photo layer eases from `scale(1.5)` back to `1` while fading up from transparent, over 2.2s
+- Scroll exit: the photo layer scales by `+0.1` and fades out linearly with progress. Only that layer fades — it sits below the stickers and the profile card, so the content is untouched
+- **Progressive loading is how `image` loads, not a second image source**: the photo layer is server-rendered, always present, and consumes the same `--hero-bg-image`, so `image_overlay`, `mobile_image` and multi-image rotation all keep working
+- It fails open: a 404, a script error, `main.js` never running, or no JS at all simply shows `image` itself (the blur layer ships `hidden`, is unhidden by the inline script beside it, and is hidden again if nothing takes over within 2s)
+- The scroll effect drives only `transform` and `opacity`, never `filter`, so there is no full-viewport blur to re-rasterise each frame
+- No scroll listener is registered under `prefers-reduced-motion`
+- Do not point `image_placeholder` at a random-image API, or the blur will preview a different photo
 
 ### Reveal on Scroll
 
-Home modules (featured carousel, post cards, sidebar cards) fade up one by one as they enter the viewport:
+Home modules — the featured carousel, the section heading, post cards, and the sidebar profile / categories / tag cards — fade up one by one as they enter the viewport:
 
-- Elements carry the `reveal` class; `main.js` adds `is-revealed` via IntersectionObserver on first intersection
-- Post cards stagger by index (60ms increments, capped at 300ms)
-- Fires once; `prefers-reduced-motion` shows content immediately
-- Custom pages can reuse it: just add the `reveal` class to any element
+- Elements carry the `reveal` class; `main.js` adds `is-revealed` through an IntersectionObserver, once per element
+- Post cards stagger by index (60ms steps, capped at 300ms) via the `--reveal-delay` custom property, so the delay never leaks into the card's own transitions
+- The entry animation leaves no `transform` declaration behind, so the card `:hover` lift keeps working
+- Hiding is gated on `<html class="reveal-ready">`, added by the head inline script before first paint. Nothing is hidden without JS, without IntersectionObserver support, or when `main.js` fails to run (a 2s fallback removes the class in that case)
+- Under `prefers-reduced-motion` content appears immediately with no animation
+- Reuse it on custom pages by adding the `reveal` class, plus an inline `--reveal-delay` when you want a stagger
 
 ## Cover Images
 
@@ -184,38 +183,6 @@ Features:
 - **Rotating paper colors**: `--p1` through `--p5` (red/blue/green/orange/violet), with the tape color following the slip.
 - **Avatar**: a `no-zoom` circular avatar is pasted in the top-right corner; omit the `img` and use `.reward-list__avatar--text` for a first-letter fallback.
 - **Responsive**: multi-column auto layout on desktop, single column on narrow screens; supports dark mode and `prefers-reduced-motion`.
-
-## Sidebar Location Welcome Card
-
-`welcome_location` renders a visitor-greeting card below the profile card in the right sidebar, based on the visitor's IP geolocation (kouseki style). Disabled by default.
-
-```yaml
-welcome_location:
-  enable: true
-  key: your-tencent-lbs-webserviceapi-key
-  longitude: 105.43501   # blogger longitude
-  latitude: 28.87875     # blogger latitude
-  unit: km               # distance unit
-  ipv6_text: 好复杂，咱看不懂~(ipv6)
-```
-
-Prerequisites:
-
-1. Create an app in the [Tencent Location Service console](https://lbs.qq.com/dev/console/application/mine) and add a Key with `WebServiceAPI` enabled
-2. Fill in `key` plus the blogger's longitude/latitude (pick from a map tool)
-
-Behavior:
-
-- Resolves the visitor's country / province / city from the IP and shows a tailored greeting (built-in table covering Chinese provinces and major countries)
-- Computes the distance between visitor and blogger (spherical distance)
-- Shows the visitor's IP; IPv6 addresses render as `ipv6_text`
-- Switches a time-of-day greeting (morning / noon / afternoon / evening / night) by local time
-
-Implementation notes:
-
-- Vanilla JSONP against `apis.map.qq.com`, no jQuery dependency
-- Card title uses the ID-badge icon (`id-card-lanyard`)
-- Shows "定位失败" when geolocation fails; works inside the mobile sidebar drawer too
 
 ## Multi-language UI
 

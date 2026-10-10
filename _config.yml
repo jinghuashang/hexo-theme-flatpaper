@@ -138,8 +138,32 @@ home_hero:
   # image:
   #   - /images/hero-1.jpg
   #   - /images/hero-2.jpg
-  # 移动端是否继续显示背景图；设为 false 时窄屏回退到纸张背景。
+  # 移动端背景图：true（默认）沿用上面的 image；false 让窄屏回退到纸张背景；
+  # 也可以直接填一个链接，窄屏（≤760px）单独使用该图片，适合准备竖版裁切。
+  # 单独指定的窄屏图源不参与上面数组的随机轮播，始终固定这一张。
   mobile_image: true
+  # mobile_image: /images/hero-mobile.jpg
+  # Medium 风格渐进加载：先铺一张高斯模糊的小图，背景大图解码完成后淡出交接；
+  # 同时开启滚动离场（图片轻微放大 + 整个开屏渐隐）。默认关闭。
+  # 图源仍然只有上面的 image —— 这里只改变它的加载表现，因此
+  # image_overlay / mobile_image / 多图轮播全部照常生效；
+  # 加载失败、脚本未执行或禁用 JS 时都会直接显示 image 本身。
+  # image_progressive: true
+  # 可选：模糊层用的小图（尽量 <100k）。省略时模糊层用纸面底色，仍有淡入。
+  # 注意不要填随机图接口，否则模糊层和最终显示的不是同一张照片。
+  # image_placeholder: /images/hero-lqip.jpg
+  # bio 位置的打字机效果（与 footer.typed 同一套字段），默认关闭。
+  # sub 为空时回退到 bio / profile.bio。
+  # typed:
+  #   enable: true
+  #   effect: true
+  #   loop: true
+  #   start_delay: 300
+  #   type_speed: 150
+  #   back_speed: 50
+  #   source: 1
+  #   sub:
+  #     - 桃李春风一杯酒，江湖夜雨十年灯
   #
   # Medium 风格渐进加载（anzhiyu imgloaded 移植）。开启后 hero 背景由
   # 小图模糊 -> 大图淡入接管，滚动时随 --process 渐隐缩放；默认关闭。
@@ -287,12 +311,15 @@ tape:
 # 页脚：
 # - left 支持 HTML；占位符：{year}=当前年份，{name}=站点 _config.yml 的 author
 # - powered 负责主题署名；设为 false 或配置 enable: false 可关闭
-#   position: start（默认，独立一行在前）| end（追加到 links 最后一行末尾，署名在最右）
+#   row: first（默认，并入第一组链接行末尾）| last（并入最后一行末尾）| own（独占一行）
 # - links 支持一维链接列表（一行）或二维链接列表（多行），同一行内用 " · " 分隔
-#   条目支持 name/link/title；仅图标时省略 name，配置 icons 数组即可（如 fa-regular:copyright）
-# - typed: © 版权行右侧的 anzhiyu 风格打字机效果；默认关闭
-#   effect: true 打字 | false 直接显示 sub 首行；loop 循环；start_delay/type_speed/back_speed 速度参数
-#   cdn 可覆盖 Typed.js 加载地址；sub 为打字内容列表
+#   条目支持 name / link / title；仅图标时省略 name，配置 icons 数组即可
+#   （如 fa-regular:copyright）；aria-label 可单独指定无障碍名称
+# - typed 是 © 版权行右侧的打字机效果，默认关闭
+#   effect: true 打字 / false 直接显示 sub 首行；loop 循环
+#   source: false 仅 sub | 1 一言 hitokoto.cn | 2 一句网 yijuzhan.com | 3 今日诗词 jinrishici.com
+#   接口内容先显示，随后循环 sub 列表；cdn 可覆盖 Typed.js 加载地址
+#   CDN 不可达或超时（6s）时自动退回纯文本显示 sub 首行
 # 不配置 footer 时默认：左 "© {year} {author}"，右 "Powered by Theme FlatPaper"
 footer:
   left: '© {year} By {name}'
@@ -301,7 +328,7 @@ footer:
     prefix: Powered by Theme
     name: FlatPaper
     link: https://github.com/Homulilly/hexo-theme-flatpaper
-    # position: end
+    # row: first
   typed:
     enable: false
     effect: true
@@ -309,9 +336,10 @@ footer:
     start_delay: 300
     type_speed: 150
     back_speed: 50
+    # source: 1
     # cdn: https://cdn.jsdelivr.net/npm/typed.js@2.1.0/dist/typed.umd.js
-    sub:
-      - 桃李春风一杯酒，江湖夜雨十年灯.
+    # sub:
+    #     - 桃李春风一杯酒，江湖夜雨十年灯.
   links:
     # 备案 / 版权链接示例：
     # - name: 蜀ICP备XXXXXXXX号-X
