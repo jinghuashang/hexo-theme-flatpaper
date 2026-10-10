@@ -233,35 +233,6 @@ home_hero:
 - `stickers.items` adds image stickers. The hero renders up to 5 custom stickers, plus the built-in note. `image` is required, while `link` is optional. `size` is optional and clamped to 48-180 pixels. Stickers with `link` show a visit confirmation bubble first and use `alt` in the prompt, such as "Visit GitHub?".
 - The bottom sticker CTA scrolls into the home content. `cta_text` changes the visible label; `cta_link` can point to another anchor and offsets for the sticky header. `cta_background` defaults to the neutral built-in `01`; set it to `01`-`09`, `random`, or a custom image path such as `/images/my-cta.webp`.
 
-`progressive_load` enables medium-style progressive loading for the hero backdrop (ported from anzhiyu imgloaded). Disabled by default:
-
-- `small_src` / `large_src`: desktop small image (blurred placeholder, keep <100k) and large image
-- `mobile_small_src` / `mobile_large_src`: mobile (≤767px) sources, falling back to the desktop ones
-- When enabled, the hero's own `image` background is skipped and the progressive layer takes over; scrolling drives opacity/scale/blur via `--process`
-- See [Features → Progressive Hero Image](features.md#progressive-hero-image)
-
-`typed` renders the bio position as an anzhiyu-style typewriter. Disabled by default (`enable: false` shows the plain bio):
-
-- `effect`: `true` for typing animation; `false` shows the first entry statically
-- `loop`: loop the typing
-- `start_delay` / `type_speed` / `back_speed`: Typed.js speed parameters (ms)
-- `source`: content source, compatible with anzhiyu `footerBar.subTitle`:
-  - `false`: use only the `sub` list
-  - `1`: hitokoto (https://hitokoto.cn) — the API entry types first, then cycles `sub`
-  - `2`: yijuzhan (https://yijuzhan.com)
-  - `3`: jinrishici (https://www.jinrishici.com)
-- `sub`: fallback/additional strings; used directly when the source is unavailable
-
-```yaml
-home_hero:
-  enable: true
-  typed:
-    enable: true
-    source: 1
-    sub:
-      - 桃李春风一杯酒，江湖夜雨十年灯
-```
-
 ## Posts
 
 ```yaml

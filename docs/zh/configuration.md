@@ -233,35 +233,6 @@ home_hero:
 - `stickers.items` 可添加图片贴纸；自定义贴纸最多渲染 5 张，加上内置便签后开屏最多 6 个 sticker。`image` 必填，`link` 可选，`size` 可选并限制在 48 到 180 像素。带 `link` 的贴纸会先弹出访问确认气泡，文案使用 `alt`，例如“要访问 GitHub 吗？”。
 - 底部贴纸按钮会滚入首页内容；`cta_text` 可修改可见文字，`cta_link` 可改成其它锚点，并会避开顶部导航遮挡。`cta_background` 默认使用中性的内置 `01`，也可设置为 `01`-`09`、`random`，或 `/images/my-cta.webp` 这样的自定义图片路径。
 
-`progressive_load` 为开屏背景启用 Medium 风格渐进加载（anzhiyu imgloaded 移植），默认关闭：
-
-- `small_src` / `large_src`：桌面端小图（模糊占位，尽量 <100k）与大图
-- `mobile_small_src` / `mobile_large_src`：移动端（≤767px）对应图源，缺省回退桌面端
-- 开启后 hero 自身 `image` 背景不再渲染，由渐进层接管；滚动时随 `--process` 渐隐缩放
-- 详见[功能说明 → 渐进式大图加载](features.md#渐进式大图加载)
-
-`typed` 把 bio 位置渲染为 anzhiyu 风格打字机，默认关闭（`enable: false` 时显示普通 bio）：
-
-- `effect`：`true` 打字效果；`false` 直接显示首条内容
-- `loop`：是否循环
-- `start_delay` / `type_speed` / `back_speed`：Typed.js 速度参数（毫秒）
-- `source`：内容接口，兼容 anzhiyu `footerBar.subTitle`：
-  - `false`：仅使用 `sub` 列表
-  - `1`：一言（https://hitokoto.cn）——接口内容先显示，随后循环 `sub`
-  - `2`：一句网（https://yijuzhan.com）
-  - `3`：今日诗词（https://www.jinrishici.com）
-- `sub`：兜底/附加文字列表；接口不可用时直接使用 `sub`
-
-```yaml
-home_hero:
-  enable: true
-  typed:
-    enable: true
-    source: 1
-    sub:
-      - 桃李春风一杯酒，江湖夜雨十年灯
-```
-
 ## 文章相关
 
 ```yaml

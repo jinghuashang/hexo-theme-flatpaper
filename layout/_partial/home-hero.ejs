@@ -65,7 +65,7 @@ function heroImageOverlay(value) {
 }
 
 var configuredHeroImages = Array.isArray(hero.image) ? hero.image : (hero.image ? [hero.image] : []);
-var heroImages = heroProgressiveEnable ? [] : configuredHeroImages.map(heroImageUrl).filter(Boolean);
+var heroImages = configuredHeroImages.map(heroImageUrl).filter(Boolean);
 var heroImage = heroImages[0] || '';
 // mobile_image is enable-or-value: false drops the photo on phones, a string
 // swaps in a narrow-screen source (it does not join the random rotation), and

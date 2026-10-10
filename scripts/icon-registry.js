@@ -28,8 +28,7 @@ const BUILTIN_ICONS = [
   'chevron-right', 'chevron-left', 'chevron-down', 'chevron-up', 'send',
   'menu', 'panel-left', 'leaf', 'aperture', 'compass', 'users', 'radio',
   'hash', 'gift', 'alipay', 'weixin', 'paypal', 'x-twitter', 'steam',
-  'bilibili', 'youtube', 'facebook', 'instagram', 'telegram', 'weibo',
-  'id-card-lanyard', 'map-pin', 'contact-round'
+  'bilibili', 'youtube', 'facebook', 'instagram', 'telegram', 'weibo'
 ];
 
 const SOCIAL_ICON_ALIASES = {

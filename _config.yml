@@ -107,23 +107,8 @@ welcome:
   # 支持站内相对路径（如 /images/welcome.jpg，放在站点 source/ 下）或绝对 URL。
   # image:
 
-# 侧边栏个性定位欢迎卡片（profile 卡片下方，kouseki 风格，默认关闭）：
-# 基于腾讯位置服务 WebServiceAPI 获取访客 IP 归属地，按国家 / 省份 / 城市
-# 显示定制欢迎语，并计算访客与博主之间的距离。需要先在
-# https://lbs.qq.com/dev/console/application/mine 创建应用并勾选 WebServiceAPI。
-welcome_location:
-  enable: false
-  key:                                # 腾讯位置服务 WebServiceAPI Key
-  longitude:                          # 博主所在经度，例如 105.43501
-  latitude:                           # 博主所在纬度，例如 28.87875
-  unit: 公里                          # 距离单位
-  ipv6_text: 好复杂，咱看不懂~(ipv6)  # IPv6 地址显示为指定内容
-
 # 首页开屏大图。默认关闭，不影响已有站点；仅在首页第一页渲染。
 # 开启后默认复用 profile 的头像、简介、社交链接与 RSS，也可以在这里覆盖。
-# typed: bio 位置打字机（anzhiyu footerBar.subTitle 兼容）
-#   source: false 仅 sub | 1 一言 hitokoto.cn | 2 一句网 yijuzhan.com | 3 今日诗词 jinrishici.com
-#   接口内容先显示，随后循环 sub 列表
 home_hero:
   enable: false
   # title: 我的手账
@@ -165,15 +150,6 @@ home_hero:
   #   sub:
   #     - 桃李春风一杯酒，江湖夜雨十年灯
   #
-  # Medium 风格渐进加载（anzhiyu imgloaded 移植）。开启后 hero 背景由
-  # 小图模糊 -> 大图淡入接管，滚动时随 --process 渐隐缩放；默认关闭。
-  # progressive_load:
-  #   enable: true
-  #   small_src: https://imgapi.jinghuashang.cn/random?sort=pc   # 小图（<100k）
-  #   large_src: https://imgapi.jinghuashang.cn/random?sort=pc   # 大图
-  #   mobile_small_src: https://imgapi.jinghuashang.cn/random?sort=sp
-  #   mobile_large_src: https://imgapi.jinghuashang.cn/random?sort=sp
-  #
   # 背景图暗色遮罩透明度：[顶部, 底部]，范围 0-1。
   # image_overlay: [0.2, 0.2]
   # 底部贴纸按钮的文字与目标锚点；默认进入首页内容区。
@@ -197,17 +173,6 @@ home_hero:
     draggable: true
     # 内置便签贴纸的文字。
     # note_text: 今日
-  # bio 位置打字机（anzhiyu footerBar.subTitle 兼容），默认关闭：
-  # typed:
-  #   enable: true
-  #   effect: true
-  #   loop: true
-  #   start_delay: 300
-  #   type_speed: 150
-  #   back_speed: 50
-  #   source: 1
-  #   sub:
-  #     - 桃李春风一杯酒，江湖夜雨十年灯
     # 自定义图片贴纸最多渲染 5 张；加上内置便签后，开屏最多 6 个 sticker。link 可选，不配置则只是可拖动装饰。
     # items:
     #   - image: /images/stickers/memo.png
